@@ -16,7 +16,8 @@ char aBuf[9];
 char tBuf[9];
 float actualTemp;
 float newTemp;
-int targetTemp = 25;
+int targetTemp = 30;
+bool heating = false;
 
 void setup(void) {
   pinMode (8, OUTPUT);
@@ -44,14 +45,12 @@ void loop() {
     tempChange();
   }   else if ((newTemp > actualTemp + 0.5) || (newTemp < actualTemp - 0.5)) {
     tempChange();
-
   }
 
 }
 
-void buzz(int) {
+void buzz(int d) {
   int l;
-  int d;
   while (l < 500)
   {
     digitalWrite (BUZZER, HIGH) ;
@@ -62,13 +61,24 @@ void buzz(int) {
   }
 }
 
+void heatOn() {
+  heating = true;
+  buzz(5);
+}
+
+void heatOff() {
+  heating = false;
+  buzz(20);
+}
+
 void tempChange() {
   actualTemp = newTemp;
 
-  if ((int)actualTemp <= targetTemp) {
-    buzz(5);
+  if ((int)actualTemp < targetTemp) {
+    heatOn();
+  } else if (heating) {
+    heatOff();
   }
-
 
   u8g.firstPage();
   do {
@@ -78,13 +88,19 @@ void tempChange() {
 
 void draw() {
   dtostrf(actualTemp, 2, 2, aBuf);
-  u8g.drawStr(10, 10, "A Temp:");
+  u8g.drawStr(12, 10, "A Temp:");
   u8g.drawStr(70, 10, aBuf);
-  u8g.drawStr(115, 10, "C");
+  u8g.drawStr(112, 10, "C");
+  if (heating) {
+    u8g.drawStr(0, 20, "H");
+  }
 
   sprintf(tBuf, "%d", targetTemp);
-  u8g.drawStr(10, 30, "T Temp:");
+  u8g.drawStr(12, 30, "T Temp:");
   u8g.drawStr(70, 30, tBuf);
   u8g.drawStr(85, 30, ".00");
-  u8g.drawStr(115, 30, "C");
+  u8g.drawStr(112, 30, "C");
+    if (!heating) {
+    u8g.drawStr(0, 20, "C");
+  }
 }
