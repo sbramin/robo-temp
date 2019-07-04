@@ -7,7 +7,7 @@ U8GLIB_SSD1306_128X32 u8g(U8G_I2C_OPT_NONE);
 #define ONE_WIRE_BUS 2
 #define UP_BUTTON 3
 #define DOWN_BUTTON 4
-#define BUZZER 8
+#define HEATER 5
 
 OneWire oneWire(ONE_WIRE_BUS);
 DallasTemperature sensors(&oneWire);
@@ -20,9 +20,9 @@ int targetTemp = 30;
 bool heating = false;
 
 void setup(void) {
-  pinMode (BUZZER, OUTPUT);
   pinMode (UP_BUTTON, INPUT);
   pinMode (DOWN_BUTTON, INPUT);
+  pinMode (HEATER, OUTPUT);
 
   u8g.setRot180();
   u8g.setColorIndex(1);
@@ -48,29 +48,17 @@ void loop() {
   }   else if ((newTemp > actualTemp + 0.5) || (newTemp < actualTemp - 0.5)) {
     tempChange();
   }
-
 }
 
-void buzz(int d) {
-  int l;
-  while (l < 500)
-  {
-    digitalWrite (BUZZER, HIGH) ;
-    delay(1);
-    digitalWrite (BUZZER, LOW) ;
-    delay(d);
-    l++;
-  }
-}
 
 void heatOn() {
   heating = true;
-  buzz(5);
+  digitalWrite (HEATER, HIGH);
 }
 
 void heatOff() {
   heating = false;
-  buzz(20);
+  digitalWrite (HEATER, LOW);
 }
 
 void tempChange() {
@@ -102,7 +90,7 @@ void draw() {
   u8g.drawStr(70, 30, tBuf);
   u8g.drawStr(85, 30, ".00");
   u8g.drawStr(112, 30, "C");
-    if (!heating) {
+  if (!heating) {
     u8g.drawStr(0, 20, "C");
   }
 }
