@@ -20,7 +20,9 @@ int targetTemp = 30;
 bool heating = false;
 
 void setup(void) {
-  pinMode (8, OUTPUT);
+  pinMode (BUZZER, OUTPUT);
+  pinMode (UP_BUTTON, INPUT);
+  pinMode (DOWN_BUTTON, INPUT);
 
   u8g.setRot180();
   u8g.setColorIndex(1);
